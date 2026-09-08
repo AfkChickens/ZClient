@@ -21,11 +21,34 @@
             started = true;
             window.__startupStarted = true;
         });
+        a.addEventListener("error", () => {
+            window.__startupMissing = true;
+            console.warn("[Z] startup.mp3 could not be loaded - is the file "
+                + "in the same folder as index.html? On GitHub Pages both "
+                + "mp3 files must be committed and pushed, too.");
+        });
         const tryPlay = () => {
             try {
                 if (a.readyState >= 1) { try { a.currentTime = 0; } catch { } }
                 const p = a.play();
-                if (p && p.catch) p.catch(() => { /* blocked -> retry */ });
+                if (p && p.catch) p.catch(() => {
+                    // Autoplay blocked (HTTPS first visit) -> the splash
+                    // shows an "Enable sound" button instead.
+                    window.__startupBlocked = true;
+                });
+            } catch { /* decorative */ }
+        };
+
+        // Called from the splash's "Enable sound" button: this click IS the
+        // user gesture that unlocks audio, so the chime can start right now.
+        window.__unlockStartupSound = function () {
+            window.__startupCancelled = false;
+            try {
+                const a2 = window.__startupAudio;
+                if (!a2) return;
+                try { a2.currentTime = 0; } catch { }
+                const p = a2.play();
+                if (p && p.catch) p.catch(() => { });
             } catch { /* decorative */ }
         };
         tryPlay();
@@ -1205,6 +1228,42 @@ footer {
 
 @keyframes boot-skip-in { to { opacity: 0.85; } }
 
+/* "Enable sound": shown while the splash is up and the browser blocked
+   autoplay (typical on HTTPS first visits). One click unlocks audio and
+   dismisses the splash in the same gesture - chime + click sounds work. */
+
+.boot-sound {
+    position: absolute;
+    bottom: 54px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-bright);
+    background: var(--accent-soft);
+    border: 1px solid rgba(var(--accent-rgb), 0.45);
+    border-radius: 999px;
+    padding: 8px 18px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s var(--ease-out), background 0.2s ease;
+    z-index: 2;
+}
+
+.boot-sound svg { width: 13px; height: 13px; }
+
+.boot-sound.show { opacity: 1; visibility: visible; }
+
+.boot-sound:hover {
+    background: rgba(var(--accent-rgb), 0.22);
+    transform: translateX(-50%) translateY(-1px);
+}
+
 #boot.is-done .boot-canvas { opacity: 0; transition: opacity 0.35s ease; }
 </style>
 </head>
@@ -1220,6 +1279,14 @@ footer {
         <span class="boot-status" id="boot-status">Starting ...</span>
     </div>
     <span class="boot-skip">Click to skip</span>
+    <button type="button" class="boot-sound" id="boot-sound">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        Enable sound
+    </button>
 </div>
 
 <!-- ======= Ambient animated background ======= -->
@@ -1752,6 +1819,14 @@ footer {
         // got to play, stop trying: a chime kicking in after the splash is
         // already gone would feel wrong.
         if (!window.__startupStarted) window.__startupCancelled = true;
+        // Blocked autoplay while the splash is still up? Offer the one-click
+        // unlock instead: the click on "Enable sound" plays the chime and
+        // dismisses the splash in the same gesture.
+        if (!window.__startupStarted && !window.__startupCancelled
+            && !window.__startupMissing) {
+            const sb = document.getElementById("boot-sound");
+            if (sb) sb.classList.add("show");
+        }
         document.documentElement.style.overflow = "";
         document.body.style.overflow = "";
         setTimeout(() => { boot.remove(); }, 900);
@@ -2016,6 +2091,21 @@ footer {
     window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") finish();
     });
+
+    // "Enable sound" button: this click IS the user gesture that unlocks
+    // audio on HTTPS - play the chime immediately, then dismiss the splash.
+    const soundBtn = document.getElementById("boot-sound");
+    if (soundBtn) {
+        soundBtn.addEventListener("click", (e) => {
+            e.stopPropagation();   // do not treat this as plain skip
+            if (typeof window.__unlockStartupSound === "function") {
+                window.__unlockStartupSound();
+            }
+            window.__startupCancelled = false;
+            soundBtn.classList.remove("show");
+            finish();
+        });
+    }
 
     // Minimum splash time so the intro reads as intended.
     const MIN_SHOW = 3400;
