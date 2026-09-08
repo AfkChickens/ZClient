@@ -670,53 +670,6 @@ body {
     background: #000;
 }
 
-.showcase-sound {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 2;
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #fff;
-    background: color-mix(in srgb, var(--bg) 70%, transparent);
-    border: 1px solid var(--border-strong);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-4px);
-    transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out),
-                background 0.2s var(--ease-out), color 0.2s var(--ease-out);
-}
-
-.showcase-card:hover .showcase-sound,
-.showcase-sound:focus-visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.showcase-sound:hover {
-    background: var(--accent-soft);
-    color: var(--accent-bright);
-    border-color: rgba(var(--accent-rgb), 0.5);
-}
-
-.showcase-sound svg {
-    width: 15px;
-    height: 15px;
-    pointer-events: none;
-}
-
-.showcase-sound .icon-on { display: none; }
-.showcase-sound.on .icon-off { display: none; }
-.showcase-sound.on .icon-on { display: block; }
-
 .showcase-info {
     padding: 16px 18px 18px;
 }
@@ -1294,19 +1247,6 @@ footer {
             <div class="showcase-preview">
                 <video class="showcase-video" src="Clips/visuels.mp4" autoplay muted loop
                        playsinline preload="metadata"></video>
-                <button type="button" class="showcase-sound" aria-label="Unmute video" title="Toggle sound">
-                    <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <line x1="23" y1="9" x2="17" y2="15"></line>
-                        <line x1="17" y1="9" x2="23" y2="15"></line>
-                    </svg>
-                    <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                </button>
             </div>
             <div class="showcase-info">
                 <h3><span>Visuals</span></h3>
@@ -1318,19 +1258,6 @@ footer {
             <div class="showcase-preview">
                 <video class="showcase-video" src="Clips/autototem.mp4" autoplay muted loop
                        playsinline preload="metadata"></video>
-                <button type="button" class="showcase-sound" aria-label="Unmute video" title="Toggle sound">
-                    <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <line x1="23" y1="9" x2="17" y2="15"></line>
-                        <line x1="17" y1="9" x2="23" y2="15"></line>
-                    </svg>
-                    <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                </button>
             </div>
             <div class="showcase-info">
                 <h3><span>Auto Totem</span></h3>
@@ -1342,19 +1269,6 @@ footer {
             <div class="showcase-preview">
                 <video class="showcase-video" src="Clips/autocrystal.mp4" autoplay muted loop
                        playsinline preload="metadata"></video>
-                <button type="button" class="showcase-sound" aria-label="Unmute video" title="Toggle sound">
-                    <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <line x1="23" y1="9" x2="17" y2="15"></line>
-                        <line x1="17" y1="9" x2="23" y2="15"></line>
-                    </svg>
-                    <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                </button>
             </div>
             <div class="showcase-info">
                 <h3><span>Auto Crystal</span></h3>
@@ -1575,27 +1489,6 @@ footer {
         }
     }, { threshold: 0.12 });
     els.forEach((el) => io.observe(el));
-})();
-
-// Showcase videos: custom sound toggle (videos are muted/autoplay, the
-// native control bar is hidden - one neat button unmutes on hover).
-(function () {
-    const btns = document.querySelectorAll(".showcase-sound");
-    if (!btns.length) return;
-    btns.forEach((btn) => {
-        const card = btn.closest(".showcase-card");
-        const video = card ? card.querySelector(".showcase-video") : null;
-        if (!video) return;
-        btn.addEventListener("click", () => {
-            video.muted = !video.muted;
-            btn.classList.toggle("on", !video.muted);
-            btn.setAttribute("aria-label", video.muted ? "Unmute video" : "Mute video");
-            if (!video.muted) {
-                const p = video.play();
-                if (p && p.catch) p.catch(() => { video.muted = true; });
-            }
-        });
-    });
 })();
 
 // Anti-inspect: redirect to access.html as soon as DevTools is opened.
