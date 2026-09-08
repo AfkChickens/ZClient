@@ -7,6 +7,11 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.26/dist/lenis.css">
 <style>
+/* ==========================================================================
+   Z Client Website - same design language as the Z-Client app
+   Theme: "Dark Orange" (fixed) - Accent: #FAA235 | Bright: #FFC553
+          BG: #29180B | Surface: #331E0E | Text: #F5ECDD
+   ========================================================================== */
 
 :root {
     --accent: #FAA235;
@@ -51,7 +56,7 @@ body {
     border-radius: 4px;
 }
 
-
+/* ===================== Ambient animated background ===================== */
 
 .ambient {
     position: fixed;
@@ -114,7 +119,7 @@ body {
     75%      { transform: translate(-40px, -30px) scale(0.92); }
 }
 
-
+/* App-wide particle field: slow glowing motes drifting behind everything */
 
 .app-particles {
     position: fixed;
@@ -125,6 +130,7 @@ body {
     pointer-events: none;
 }
 
+/* ===================== Top bar ===================== */
 
 .topbar {
     display: flex;
@@ -247,7 +253,7 @@ body {
     transform: translateY(-1px);
 }
 
-
+/* ===================== Hero ===================== */
 
 .hero {
     text-align: center;
@@ -325,7 +331,7 @@ body {
     transform: translateY(-1px);
 }
 
-
+/* Small trust badges under the hero actions */
 .hero-badges {
     display: flex;
     flex-wrap: wrap;
@@ -353,7 +359,7 @@ body {
     font-weight: 800;
 }
 
-
+/* ===================== Preview (screenshot in app-window frame) ===================== */
 
 .preview-wrap {
     position: relative;
@@ -528,7 +534,7 @@ body {
     100% { box-shadow: 0 0 8px rgba(63, 185, 112, 0.6), 0 0 0 0 rgba(63, 185, 112, 0); }
 }
 
-
+/* ===================== Sections ===================== */
 
 .section-head {
     text-align: center;
@@ -560,7 +566,7 @@ body {
     margin-top: 10px;
 }
 
-
+/* ===================== Features ===================== */
 
 .features-section {
     padding: 2rem 5% 6rem;
@@ -620,7 +626,7 @@ body {
     line-height: 1.6;
 }
 
-
+/* ===================== Showcase (product clips) ===================== */
 
 .showcase-section {
     padding: 1rem 5% 6rem;
@@ -731,7 +737,7 @@ body {
     line-height: 1.6;
 }
 
-
+/* ===================== Discord / Help Center ===================== */
 
 .discord-section {
     padding: 1rem 5% 5rem;
@@ -810,7 +816,7 @@ body {
     transform: translateY(-1px);
 }
 
-
+/* ===================== Pricing ===================== */
 
 .pricing-section {
     padding: 6rem 5% 7rem;
@@ -906,7 +912,7 @@ body {
     color: var(--text-faint);
 }
 
-
+/* Struck-through original price + discount pill (e.g. Lifetime 30% off) */
 .old-price {
     font-size: 15px;
     font-weight: 600;
@@ -997,6 +1003,7 @@ body {
                            0 0 0 9px rgba(var(--accent-rgb), 0); }
 }
 
+/* ===================== Footer ===================== */
 
 footer {
     border-top: 1px solid var(--border);
@@ -1055,7 +1062,7 @@ footer {
     color: var(--text-faint);
 }
 
-
+/* ===================== Scroll reveal ===================== */
 
 .reveal {
     opacity: 0;
@@ -1071,19 +1078,19 @@ footer {
     transform: none;
 }
 
-
+/* Staggered reveal for the feature cards (hover stays instant) */
 .features-grid .reveal:nth-child(2) { transition-delay: 0.06s, 0.06s, 0s, 0s; }
 .features-grid .reveal:nth-child(3) { transition-delay: 0.12s, 0.12s, 0s, 0s; }
 .features-grid .reveal:nth-child(4) { transition-delay: 0.18s, 0.18s, 0s, 0s; }
 
-
+/* ===================== Animation ===================== */
 
 @keyframes rise-in {
     from { opacity: 0; transform: translateY(14px) scale(0.985); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-
+/* Soft fade-in for the app screenshot */
 .preview-img { animation: img-fade 0.9s var(--ease-out) 0.15s both; }
 
 @keyframes img-fade {
@@ -1096,7 +1103,7 @@ footer {
     50%      { transform: scale(1.06); box-shadow: 0 18px 60px rgba(var(--accent-rgb), 0.6); }
 }
 
-
+/* ===================== Scrollbars ===================== */
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1107,6 +1114,7 @@ footer {
 }
 ::-webkit-scrollbar-thumb:hover { border-color: var(--accent); }
 
+/* ===================== Responsive ===================== */
 
 @media (max-width: 700px) {
     .hero { padding: 4.5rem 1.2rem 3.5rem; }
@@ -1139,17 +1147,17 @@ footer {
 </head>
 <body>
 
-
+<!-- ======= Ambient animated background ======= -->
 <div class="ambient" aria-hidden="true">
     <span class="blob blob-a"></span>
     <span class="blob blob-b"></span>
     <span class="blob blob-c"></span>
 </div>
 
-
+<!-- ======= App-wide particle field ======= -->
 <canvas id="app-particles" class="app-particles" aria-hidden="true"></canvas>
 
-
+<!-- ======= Top bar ======= -->
 <header class="topbar" id="topbar">
     <div class="topbar-left">
         <div class="brand">
@@ -1171,7 +1179,7 @@ footer {
     <a href="#pricing" class="btn btn-primary">Buy</a>
 </header>
 
-
+<!-- ======= Hero ======= -->
 <header class="hero">
     <div class="hero-mark" aria-hidden="true"><span class="brand-z">Z</span></div>
     <h2>Next Level <span class="grad-text">Cheats</span></h2>
@@ -1210,7 +1218,7 @@ footer {
     </div>
 </header>
 
-
+<!-- ======= Features ======= -->
 <section class="features-section" id="features">
     <div class="section-head reveal">
         <span class="eyebrow">Features</span>
@@ -1273,7 +1281,7 @@ footer {
     </div>
 </section>
 
-
+<!-- ======= Showcase ======= -->
 <section class="showcase-section" id="showcase">
     <div class="section-head reveal">
         <span class="eyebrow">Showcase</span>
@@ -1357,7 +1365,7 @@ footer {
     </div>
 </section>
 
-
+<!-- ======= Discord / Help Center ======= -->
 <section class="discord-section" id="discord">
     <div class="discord-card reveal">
         <div class="discord-icon" aria-hidden="true">
@@ -1374,7 +1382,7 @@ footer {
     </div>
 </section>
 
-
+<!-- ======= Pricing ======= -->
 <section class="pricing-section" id="pricing">
     <div class="section-head reveal">
         <span class="eyebrow">Pricing</span>
@@ -1448,7 +1456,8 @@ footer {
 
 <script src="https://unpkg.com/lenis@1.3.26/dist/lenis.min.js"></script>
 <script>
-
+// App-wide particle field: slow glowing motes drifting behind the whole
+// page - the same vibe as the Z-Client app (decorative only).
 (function () {
     try {
         if (window.matchMedia
@@ -1465,6 +1474,7 @@ footer {
         resize();
         window.addEventListener("resize", resize);
 
+        // Pre-rendered soft glow sprite in the accent color (drawn once).
         const sprite = document.createElement("canvas");
         sprite.width = sprite.height = 64;
         const accent = getComputedStyle(document.documentElement)
@@ -1511,7 +1521,7 @@ footer {
             ctx.globalCompositeOperation = "lighter";
             for (let i = parts.length - 1; i >= 0; i--) {
                 const p = parts[i];
-
+                // Finite-life embers fade in, drift, fade out, then despawn.
                 let k = 1;
                 if (p.ember && p.life !== Infinity) {
                     k = (t - p.born) / p.life;
@@ -1519,7 +1529,7 @@ footer {
                 }
                 p.x += p.vx;
                 p.y += p.vy;
-                if (p.y < -12) {     
+                if (p.y < -12) {                 // rose out of view
                     if (p.ember) { parts.splice(i, 1); continue; }
                     p.x = Math.random() * W; p.y = H + 10;
                 }
@@ -1528,7 +1538,7 @@ footer {
                 let a = p.alpha
                     * (0.75 + 0.25 * Math.sin(p.tw + (t / 1000) * p.twS));
                 if (p.ember) {
-
+                    // Smooth envelope: fade in / hold / fade out.
                     const env = k < p.fadeIn ? k / p.fadeIn
                         : k > p.fadeOutStart ? Math.max(0, (1 - k) / (1 - p.fadeOutStart))
                         : 1;
@@ -1546,7 +1556,7 @@ footer {
     } catch { /* decorative */ }
 })();
 
-
+// Scroll reveal: fade elements in as they enter the viewport.
 (function () {
     const els = document.querySelectorAll(".reveal");
     if (!els.length) return;
@@ -1567,7 +1577,8 @@ footer {
     els.forEach((el) => io.observe(el));
 })();
 
-
+// Showcase videos: custom sound toggle (videos are muted/autoplay, the
+// native control bar is hidden - one neat button unmutes on hover).
 (function () {
     const btns = document.querySelectorAll(".showcase-sound");
     if (!btns.length) return;
@@ -1587,7 +1598,12 @@ footer {
     });
 })();
 
-
+// Anti-inspect: redirect to access.html as soon as DevTools is opened.
+// Two detectors that complement each other:
+//   1. Size delta - docking DevTools enlarges the gap between
+//      window.outerWidth/Height and innerWidth/innerHeight.
+//   2. debugger statement - it pauses execution only while DevTools
+//      is attached, which measurably slows down the tick.
 (function () {
     const TARGET = "access.html";
     let redirected = false;
@@ -1598,10 +1614,11 @@ footer {
         window.location.href = TARGET;
     }
 
-
+    // Baseline measured at load: the browser chrome (toolbar etc.) is
+    // already included, so we only react to a *new* gap on top of it.
     const baseW = window.outerWidth - window.innerWidth;
     const baseH = window.outerHeight - window.innerHeight;
-    const MIN_GAP = 120; 
+    const MIN_GAP = 120; // px of extra space that DevTools must add
 
     function detectSize() {
         if (window.outerWidth - window.innerWidth > baseW + MIN_GAP
@@ -1621,21 +1638,24 @@ footer {
     setInterval(detectDebugger, 1000);
 })();
 
-
+// Lenis smooth scroll: buttery wheel/touch scrolling with momentum.
+// If the CDN is unreachable, the page gracefully falls back to native
+// scrolling (Lenis is undefined -> no-op).
 (function () {
     if (typeof Lenis === "undefined") return;
 
     const lenis = new Lenis({
         autoRaf: true,
         autoToggle: true,
-        lerp: 0.09,         
+        lerp: 0.09,                 // lower = smoother, longer glide
         wheelMultiplier: 1,
         stopInertiaOnNavigate: true,
-
+        // respectReducedMotion defaults to true
     });
     window.lenis = lenis;
 
-
+    // Anchor links: scroll through the Lenis engine (same eased feel as
+    // wheel scrolling) and keep the URL hash in sync.
     document.querySelectorAll('a[href^="#"]').forEach((link) => {
         link.addEventListener("click", (e) => {
             const id = link.getAttribute("href");
@@ -1644,7 +1664,7 @@ footer {
             if (!target) return;
             e.preventDefault();
             lenis.scrollTo(target, {
-                offset: 80,     
+                offset: 80,          // sticky topbar + breathing room
                 duration: 1.2,
                 onComplete: () => history.replaceState(null, "", id),
             });
