@@ -4,70 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Z Client</title>
-<link rel="preload" as="audio" href="startup.mp3" type="audio/mpeg">
-<script>
-// Startup sound: fire the play attempt as early as possible - long before
-// the rest of the page (CDN scripts, images) has loaded, so the sound
-// starts with the splash, not seconds into it. Browsers that block
-// autoplay without a user gesture retry on the first click/keypress.
-(function () {
-    try {
-        const a = new Audio("startup.mp3");
-        a.preload = "auto";
-        a.volume = 0.55;
-        window.__startupAudio = a;   // reused by the boot splash script
-        let started = false;
-        a.addEventListener("playing", () => {
-            started = true;
-            window.__startupStarted = true;
-        });
-        a.addEventListener("error", () => {
-            window.__startupMissing = true;
-            console.warn("[Z] startup.mp3 could not be loaded - is the file "
-                + "in the same folder as index.html? On GitHub Pages both "
-                + "mp3 files must be committed and pushed, too.");
-        });
-        const tryPlay = () => {
-            try {
-                if (a.readyState >= 1) { try { a.currentTime = 0; } catch { } }
-                const p = a.play();
-                if (p && p.catch) p.catch(() => {
-                    // Autoplay blocked (HTTPS first visit) -> the splash
-                    // shows an "Enable sound" button instead.
-                    window.__startupBlocked = true;
-                });
-            } catch { /* decorative */ }
-        };
-
-        // Called from the splash's "Enable sound" button: this click IS the
-        // user gesture that unlocks audio, so the chime can start right now.
-        window.__unlockStartupSound = function () {
-            window.__startupCancelled = false;
-            try {
-                const a2 = window.__startupAudio;
-                if (!a2) return;
-                try { a2.currentTime = 0; } catch { }
-                const p = a2.play();
-                if (p && p.catch) p.catch(() => { });
-            } catch { /* decorative */ }
-        };
-        tryPlay();
-        const onGesture = () => {
-            if (started || window.__startupCancelled) return;
-            tryPlay();
-        };
-        window.addEventListener("pointerdown", onGesture);
-        window.addEventListener("keydown", onGesture);
-    } catch { /* sound is decorative - never break the page over it */ }
-})();
-</script>
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.26/dist/lenis.css">
 <style>
-/* ==========================================================================
-   Z Client Website - same design language as the Z-Client app
-   Theme: "Dark Orange" (fixed) - Accent: #FAA235 | Bright: #FFC553
-          BG: #29180B | Surface: #331E0E | Text: #F5ECDD
-   ========================================================================== */
 
 :root {
     --accent: #FAA235;
@@ -112,7 +51,7 @@ body {
     border-radius: 4px;
 }
 
-/* ===================== Ambient animated background ===================== */
+
 
 .ambient {
     position: fixed;
@@ -175,7 +114,7 @@ body {
     75%      { transform: translate(-40px, -30px) scale(0.92); }
 }
 
-/* App-wide particle field: slow glowing motes drifting behind everything */
+
 
 .app-particles {
     position: fixed;
@@ -186,7 +125,6 @@ body {
     pointer-events: none;
 }
 
-/* ===================== Top bar ===================== */
 
 .topbar {
     display: flex;
@@ -309,7 +247,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* ===================== Hero ===================== */
+
 
 .hero {
     text-align: center;
@@ -387,7 +325,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* Small trust badges under the hero actions */
+
 .hero-badges {
     display: flex;
     flex-wrap: wrap;
@@ -415,7 +353,7 @@ body {
     font-weight: 800;
 }
 
-/* ===================== Preview (screenshot in app-window frame) ===================== */
+
 
 .preview-wrap {
     position: relative;
@@ -590,7 +528,7 @@ body {
     100% { box-shadow: 0 0 8px rgba(63, 185, 112, 0.6), 0 0 0 0 rgba(63, 185, 112, 0); }
 }
 
-/* ===================== Sections ===================== */
+
 
 .section-head {
     text-align: center;
@@ -622,7 +560,7 @@ body {
     margin-top: 10px;
 }
 
-/* ===================== Features ===================== */
+
 
 .features-section {
     padding: 2rem 5% 6rem;
@@ -682,7 +620,118 @@ body {
     line-height: 1.6;
 }
 
-/* ===================== Discord / Help Center ===================== */
+
+
+.showcase-section {
+    padding: 1rem 5% 6rem;
+}
+
+.showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.showcase-card {
+    text-align: left;
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out),
+                transform 0.25s var(--ease-out);
+}
+
+.showcase-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(var(--accent-rgb), 0.5);
+    box-shadow: 0 12px 32px rgba(var(--accent-rgb), 0.14);
+}
+
+.showcase-preview {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+}
+
+.showcase-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #000;
+}
+
+.showcase-sound {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out),
+                background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+
+.showcase-card:hover .showcase-sound,
+.showcase-sound:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.showcase-sound:hover {
+    background: var(--accent-soft);
+    color: var(--accent-bright);
+    border-color: rgba(var(--accent-rgb), 0.5);
+}
+
+.showcase-sound svg {
+    width: 15px;
+    height: 15px;
+    pointer-events: none;
+}
+
+.showcase-sound .icon-on { display: none; }
+.showcase-sound.on .icon-off { display: none; }
+.showcase-sound.on .icon-on { display: block; }
+
+.showcase-info {
+    padding: 16px 18px 18px;
+}
+
+.showcase-info h3 {
+    font-size: 15.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.showcase-info h3 span {
+    color: var(--accent-bright);
+}
+
+.showcase-info p {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+
 
 .discord-section {
     padding: 1rem 5% 5rem;
@@ -761,7 +810,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* ===================== Pricing ===================== */
+
 
 .pricing-section {
     padding: 6rem 5% 7rem;
@@ -857,7 +906,7 @@ body {
     color: var(--text-faint);
 }
 
-/* Struck-through original price + discount pill (e.g. Lifetime 30% off) */
+
 .old-price {
     font-size: 15px;
     font-weight: 600;
@@ -948,7 +997,6 @@ body {
                            0 0 0 9px rgba(var(--accent-rgb), 0); }
 }
 
-/* ===================== Footer ===================== */
 
 footer {
     border-top: 1px solid var(--border);
@@ -1007,7 +1055,7 @@ footer {
     color: var(--text-faint);
 }
 
-/* ===================== Scroll reveal ===================== */
+
 
 .reveal {
     opacity: 0;
@@ -1023,19 +1071,19 @@ footer {
     transform: none;
 }
 
-/* Staggered reveal for the feature cards (hover stays instant) */
+
 .features-grid .reveal:nth-child(2) { transition-delay: 0.06s, 0.06s, 0s, 0s; }
 .features-grid .reveal:nth-child(3) { transition-delay: 0.12s, 0.12s, 0s, 0s; }
 .features-grid .reveal:nth-child(4) { transition-delay: 0.18s, 0.18s, 0s, 0s; }
 
-/* ===================== Animation ===================== */
+
 
 @keyframes rise-in {
     from { opacity: 0; transform: translateY(14px) scale(0.985); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Soft fade-in for the app screenshot */
+
 .preview-img { animation: img-fade 0.9s var(--ease-out) 0.15s both; }
 
 @keyframes img-fade {
@@ -1048,7 +1096,7 @@ footer {
     50%      { transform: scale(1.06); box-shadow: 0 18px 60px rgba(var(--accent-rgb), 0.6); }
 }
 
-/* ===================== Scrollbars ===================== */
+
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1059,11 +1107,11 @@ footer {
 }
 ::-webkit-scrollbar-thumb:hover { border-color: var(--accent); }
 
-/* ===================== Responsive ===================== */
 
 @media (max-width: 700px) {
     .hero { padding: 4.5rem 1.2rem 3.5rem; }
     .features-section { padding: 1rem 6% 4rem; }
+    .showcase-section { padding: 0.5rem 6% 4rem; }
     .discord-section { padding: 0.5rem 6% 4rem; }
     .discord-card { flex-direction: column; text-align: center; padding: 30px 24px; }
     .discord-text { text-align: center; }
@@ -1085,221 +1133,23 @@ footer {
     .price-card.featured .buy-btn, .preview-img { animation: none; }
     .app-particles { display: none; }
     .reveal { opacity: 1; transform: none; transition: none; }
-    #boot { display: none; }
 }
 
-/* ===================== Boot splash (app-style particle intro) ===================== */
-
-/* Full-screen overlay in the FOREGROUND: it covers the page while the site
-   loads/renders underneath, plays the particle-logo intro from the app and
-   then fades away smoothly. */
-
-#boot {
-    position: fixed;
-    inset: 0;
-    z-index: 300;                 /* above topbar (110) and everything else */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-    transition: opacity 0.7s var(--ease-in-out), visibility 0.7s var(--ease-in-out);
-}
-
-#boot.is-done {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-/* Splash content rises softly once the particles have converged */.boot-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: clamp(14px, 2vmin, 26px);
-    animation: rise-in 0.5s var(--ease-out) both;
-}
-
-/* The logo scales with the screen (vmin = viewport min side), so the
-   particle intro reads big and cinematic on any monitor. */
-.boot-mark {
-    width: clamp(72px, 13vmin, 170px);
-    height: clamp(72px, 13vmin, 170px);
-    border-radius: 31%;
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
-    box-shadow: 0 12px 42px rgba(var(--accent-rgb), 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.45s var(--ease-out), transform 0.5s var(--ease-out);
-}
-
-.boot-mark .brand-z {
-    font-size: clamp(38px, 6.8vmin, 90px);
-}
-
-/* #boot.risen: the particles have formed the logo -> reveal it + the bar */
-
-#boot.risen .boot-mark {
-    opacity: 1;
-    transform: scale(1);
-    animation: breathe 1.6s ease-in-out infinite;
-}
-
-.boot-title {
-    font-size: clamp(20px, 2.6vmin, 32px);
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    opacity: 0;
-    transition: opacity 0.4s var(--ease-out);
-}
-
-#boot.risen .boot-title { opacity: 1; }
-
-.boot-bar {
-    position: relative;
-    width: clamp(190px, 24vmin, 320px);
-    height: 5px;
-    border-radius: 999px;
-    background: var(--accent-soft);
-    overflow: hidden;
-    opacity: 0;
-    transition: opacity 0.4s var(--ease-out);
-}
-
-#boot.risen .boot-bar { opacity: 1; }
-
-.boot-bar span {
-    display: block;
-    width: 34%;
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    animation: lp-slide 1.1s ease-in-out infinite;
-    position: absolute;
-    left: 0;
-    top: 0;
-    will-change: transform;
-}
-
-@keyframes lp-slide {
-    0%   { transform: translateX(-110%); }
-    100% { transform: translateX(310%); }
-}
-
-.boot-status {
-    min-height: 17px;
-    font-size: clamp(13px, 1.6vmin, 17px);
-    font-weight: 600;
-    color: var(--text-dim);
-    letter-spacing: 0.2px;
-    opacity: 0;
-    transition: opacity 0.4s var(--ease-out);
-}
-
-#boot.risen .boot-status { opacity: 1; }
-
-/* Canvas sits behind the splash content, painting the flying particles */
-
-.boot-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-/* Skip hint: "Click to skip" appears after a moment, purely optional */
-
-.boot-skip {
-    position: absolute;
-    bottom: 26px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 11.5px;
-    font-weight: 600;
-    color: var(--text-faint);
-    opacity: 0;
-    transition: opacity 0.4s var(--ease-out);
-    animation: boot-skip-in 0.4s var(--ease-out) 1.2s both;
-}
-
-@keyframes boot-skip-in { to { opacity: 0.85; } }
-
-/* "Enable sound": shown while the splash is up and the browser blocked
-   autoplay (typical on HTTPS first visits). One click unlocks audio and
-   dismisses the splash in the same gesture - chime + click sounds work. */
-
-.boot-sound {
-    position: absolute;
-    bottom: 54px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent-bright);
-    background: var(--accent-soft);
-    border: 1px solid rgba(var(--accent-rgb), 0.45);
-    border-radius: 999px;
-    padding: 8px 18px;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s var(--ease-out), background 0.2s ease;
-    z-index: 2;
-}
-
-.boot-sound svg { width: 13px; height: 13px; }
-
-.boot-sound.show { opacity: 1; visibility: visible; }
-
-.boot-sound:hover {
-    background: rgba(var(--accent-rgb), 0.22);
-    transform: translateX(-50%) translateY(-1px);
-}
-
-#boot.is-done .boot-canvas { opacity: 0; transition: opacity 0.35s ease; }
 </style>
 </head>
 <body>
 
-<!-- ======= Boot splash: app-style particle intro, fades out when done ======= -->
-<div id="boot" aria-hidden="true">
-    <canvas id="boot-canvas" class="boot-canvas"></canvas>
-    <div class="boot-inner">
-        <span class="boot-mark"><span class="brand-z">Z</span></span>
-        <span class="boot-title">Z-Client</span>
-        <span class="boot-bar"><span></span></span>
-        <span class="boot-status" id="boot-status">Starting ...</span>
-    </div>
-    <span class="boot-skip">Click to skip</span>
-    <button type="button" class="boot-sound" id="boot-sound">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        </svg>
-        Enable sound
-    </button>
-</div>
 
-<!-- ======= Ambient animated background ======= -->
 <div class="ambient" aria-hidden="true">
     <span class="blob blob-a"></span>
     <span class="blob blob-b"></span>
     <span class="blob blob-c"></span>
 </div>
 
-<!-- ======= App-wide particle field ======= -->
+
 <canvas id="app-particles" class="app-particles" aria-hidden="true"></canvas>
 
-<!-- ======= Top bar ======= -->
+
 <header class="topbar" id="topbar">
     <div class="topbar-left">
         <div class="brand">
@@ -1308,6 +1158,7 @@ footer {
         </div>
         <nav class="nav-links" aria-label="Main">
             <a href="#features">Features</a>
+            <a href="#showcase">Showcase</a>
             <a href="#pricing">Pricing</a>
             <a href="https://discord.gg/ZFpGJYQ6eU" target="_blank" rel="noopener" class="nav-discord">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1320,7 +1171,7 @@ footer {
     <a href="#pricing" class="btn btn-primary">Buy</a>
 </header>
 
-<!-- ======= Hero ======= -->
+
 <header class="hero">
     <div class="hero-mark" aria-hidden="true"><span class="brand-z">Z</span></div>
     <h2>Next Level <span class="grad-text">Cheats</span></h2>
@@ -1359,7 +1210,7 @@ footer {
     </div>
 </header>
 
-<!-- ======= Features ======= -->
+
 <section class="features-section" id="features">
     <div class="section-head reveal">
         <span class="eyebrow">Features</span>
@@ -1422,7 +1273,91 @@ footer {
     </div>
 </section>
 
-<!-- ======= Discord / Help Center ======= -->
+
+<section class="showcase-section" id="showcase">
+    <div class="section-head reveal">
+        <span class="eyebrow">Showcase</span>
+        <h2>See It In <span class="grad-text">Action</span></h2>
+        <p class="sub">Real gameplay clips - every feature working live in Minecraft.</p>
+    </div>
+    <div class="showcase-grid">
+
+        <article class="showcase-card reveal">
+            <div class="showcase-preview">
+                <video class="showcase-video" src="Clips/visuels.mp4" autoplay muted loop
+                       playsinline preload="metadata"></video>
+                <button type="button" class="showcase-sound" aria-label="Unmute video" title="Toggle sound">
+                    <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                    <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="showcase-info">
+                <h3><span>Visuals</span></h3>
+                <p>ESP, glow and chams running live - see exactly what matters, crystal clear.</p>
+            </div>
+        </article>
+
+        <article class="showcase-card reveal">
+            <div class="showcase-preview">
+                <video class="showcase-video" src="Clips/autototem.mp4" autoplay muted loop
+                       playsinline preload="metadata"></video>
+                <button type="button" class="showcase-sound" aria-label="Unmute video" title="Toggle sound">
+                    <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                    <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="showcase-info">
+                <h3><span>Auto Totem</span></h3>
+                <p>Totems are swapped the instant you take damage - survives every fight.</p>
+            </div>
+        </article>
+
+        <article class="showcase-card reveal">
+            <div class="showcase-preview">
+                <video class="showcase-video" src="Clips/autocrystal.mp4" autoplay muted loop
+                       playsinline preload="metadata"></video>
+                <button type="button" class="showcase-sound" aria-label="Unmute video" title="Toggle sound">
+                    <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                    <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="showcase-info">
+                <h3><span>Auto Crystal</span></h3>
+                <p>Places and detonates crystals at the perfect pace for devastating combos.</p>
+            </div>
+        </article>
+
+    </div>
+</section>
+
+
 <section class="discord-section" id="discord">
     <div class="discord-card reveal">
         <div class="discord-icon" aria-hidden="true">
@@ -1439,7 +1374,7 @@ footer {
     </div>
 </section>
 
-<!-- ======= Pricing ======= -->
+
 <section class="pricing-section" id="pricing">
     <div class="section-head reveal">
         <span class="eyebrow">Pricing</span>
@@ -1513,8 +1448,7 @@ footer {
 
 <script src="https://unpkg.com/lenis@1.3.26/dist/lenis.min.js"></script>
 <script>
-// App-wide particle field: slow glowing motes drifting behind the whole
-// page - the same vibe as the Z-Client app (decorative only).
+
 (function () {
     try {
         if (window.matchMedia
@@ -1531,7 +1465,6 @@ footer {
         resize();
         window.addEventListener("resize", resize);
 
-        // Pre-rendered soft glow sprite in the accent color (drawn once).
         const sprite = document.createElement("canvas");
         sprite.width = sprite.height = 64;
         const accent = getComputedStyle(document.documentElement)
@@ -1570,28 +1503,6 @@ footer {
         }
         for (let i = 0; i < COUNT; i++) parts.push(makeMote());
 
-        // Spawn an "ember": a finite-life background particle. Used by the
-        // boot intro to hand its particles over at the logo handoff, so the
-        // cloud keeps floating through the page afterwards.
-        window.spawnEmber = function (o) {
-            try {
-                const m = makeMote();
-                m.ember = true;
-                m.x = o.x; m.y = o.y;
-                m.vx = o.vx; m.vy = o.vy;
-                m.size = o.size;
-                m.alpha = o.alpha;
-                m.born = o.born;
-                m.life = o.life;
-                m.tw = Math.random() * Math.PI * 2;
-                m.twS = 0.8 + Math.random() * 1.6;
-                m.fadeIn = o.fadeIn || 0.1;
-                m.fadeOutStart = o.fadeOutStart || 0.75;
-                m.bonus = o.bonus || 1;
-                parts.push(m);
-            } catch { /* decorative */ }
-        };
-
         const step = () => {
             const W = canvas.width, H = canvas.height;
             if (W < 10 || H < 10) { requestAnimationFrame(step); return; }
@@ -1600,7 +1511,7 @@ footer {
             ctx.globalCompositeOperation = "lighter";
             for (let i = parts.length - 1; i >= 0; i--) {
                 const p = parts[i];
-                // Finite-life embers fade in, drift, fade out, then despawn.
+
                 let k = 1;
                 if (p.ember && p.life !== Infinity) {
                     k = (t - p.born) / p.life;
@@ -1608,7 +1519,7 @@ footer {
                 }
                 p.x += p.vx;
                 p.y += p.vy;
-                if (p.y < -12) {                 // rose out of view
+                if (p.y < -12) {     
                     if (p.ember) { parts.splice(i, 1); continue; }
                     p.x = Math.random() * W; p.y = H + 10;
                 }
@@ -1617,7 +1528,7 @@ footer {
                 let a = p.alpha
                     * (0.75 + 0.25 * Math.sin(p.tw + (t / 1000) * p.twS));
                 if (p.ember) {
-                    // Smooth envelope: fade in / hold / fade out.
+
                     const env = k < p.fadeIn ? k / p.fadeIn
                         : k > p.fadeOutStart ? Math.max(0, (1 - k) / (1 - p.fadeOutStart))
                         : 1;
@@ -1635,7 +1546,7 @@ footer {
     } catch { /* decorative */ }
 })();
 
-// Scroll reveal: fade elements in as they enter the viewport.
+
 (function () {
     const els = document.querySelectorAll(".reveal");
     if (!els.length) return;
@@ -1656,12 +1567,27 @@ footer {
     els.forEach((el) => io.observe(el));
 })();
 
-// Anti-inspect: redirect to access.html as soon as DevTools is opened.
-// Two detectors that complement each other:
-//   1. Size delta - docking DevTools enlarges the gap between
-//      window.outerWidth/Height and innerWidth/innerHeight.
-//   2. debugger statement - it pauses execution only while DevTools
-//      is attached, which measurably slows down the tick.
+
+(function () {
+    const btns = document.querySelectorAll(".showcase-sound");
+    if (!btns.length) return;
+    btns.forEach((btn) => {
+        const card = btn.closest(".showcase-card");
+        const video = card ? card.querySelector(".showcase-video") : null;
+        if (!video) return;
+        btn.addEventListener("click", () => {
+            video.muted = !video.muted;
+            btn.classList.toggle("on", !video.muted);
+            btn.setAttribute("aria-label", video.muted ? "Unmute video" : "Mute video");
+            if (!video.muted) {
+                const p = video.play();
+                if (p && p.catch) p.catch(() => { video.muted = true; });
+            }
+        });
+    });
+})();
+
+
 (function () {
     const TARGET = "access.html";
     let redirected = false;
@@ -1672,11 +1598,10 @@ footer {
         window.location.href = TARGET;
     }
 
-    // Baseline measured at load: the browser chrome (toolbar etc.) is
-    // already included, so we only react to a *new* gap on top of it.
+
     const baseW = window.outerWidth - window.innerWidth;
     const baseH = window.outerHeight - window.innerHeight;
-    const MIN_GAP = 120; // px of extra space that DevTools must add
+    const MIN_GAP = 120; 
 
     function detectSize() {
         if (window.outerWidth - window.innerWidth > baseW + MIN_GAP
@@ -1696,482 +1621,21 @@ footer {
     setInterval(detectDebugger, 1000);
 })();
 
-// ---------------------------------------------------------------------------
-// Boot splash: app-style particle intro in the foreground. The page renders
-// underneath while ~400 accent-colored particles fly in from the edges,
-// swirl and converge onto the Z logo, glow rings pulse, then the particles
-// rise up and dissolve and the splash fades out smoothly.
-// ---------------------------------------------------------------------------
-(function () {
-    const boot = document.getElementById("boot");
-    if (!boot) return;
-    const statusEl = document.getElementById("boot-status");
-    const canvas = document.getElementById("boot-canvas");
-    const reduced = window.matchMedia
-        && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Respect reduced motion and skip the splash entirely.
-    if (reduced) { boot.classList.add("is-done"); return; }
-    // If the browser restored a scroll position (back/forward), skip too.
-    if ("scrollRestoration" in history
-        && history.scrollRestoration === "manual") {
-        boot.classList.add("is-done");
-        return;
-    }
-
-    // Lock page scroll while the splash is up.
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-
-    const ctx = canvas ? canvas.getContext("2d") : null;
-    const hexA = (hex, a) => {
-        const h = hex.replace("#", "");
-        const n = parseInt(h.length === 3
-            ? h.split("").map((c) => c + c).join("") : h, 16);
-        return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
-    };
-
-    const accent = getComputedStyle(document.documentElement)
-        .getPropertyValue("--accent").trim() || "#FAA235";    const bright = getComputedStyle(document.documentElement)
-        .getPropertyValue("--accent-bright").trim() || "#FFC553";
-
-    // Pre-rendered soft glow sprite (hot white core -> accent halo).
-    const sprite = document.createElement("canvas");
-    sprite.width = sprite.height = 32;
-    {
-        const sctx = sprite.getContext("2d");
-        // Parse the bright accent into rgb for the hot core tint.
-        const n = parseInt(bright.replace("#", ""), 16);
-        const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-        const grad = sctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-        grad.addColorStop(0.0, "rgba(255, 255, 255, 1)");
-        grad.addColorStop(0.18, `rgba(${r + Math.round((255 - r) * 0.35)}, ${g + Math.round((255 - g) * 0.35)}, ${b + Math.round((255 - b) * 0.35)}, 0.95)`);
-        grad.addColorStop(0.45, `rgba(${r}, ${g}, ${b}, 0.55)`);
-        grad.addColorStop(0.75, `rgba(${r}, ${g}, ${b}, 0.16)`);
-        grad.addColorStop(1.0, `rgba(${r}, ${g}, ${b}, 0)`);
-        sctx.fillStyle = grad;
-        sctx.fillRect(0, 0, 32, 32);
-    }
-
-    // Glow points on the brand mark's silhouette (rounded square + Z core) -
-    // same shape logic as the app's markGlowPoints().
-    function markGlowPoints(cx, cy, S) {
-        const pts = [];
-        const a = S / 2, r = S * (15 / 48);
-        const steps = 52;
-        for (let i = 0; i < steps; i++) {
-            const s1 = a - r, per = 2 * s1, arc = (Math.PI / 2) * r;
-            const t = (i / steps) * (4 * per + 4 * arc);
-            let x, y;
-            if (t < per) { x = -a + r + t; y = -a; }
-            else if (t < per + arc) {
-                const u = (t - per) / r;
-                x = s1 + Math.sin(u) * r; y = -s1 - Math.cos(u) * r;
-            } else if (t < 2 * per + arc) { x = a; y = -a + r + (t - per - arc); }
-            else if (t < 2 * per + 2 * arc) {
-                const u = (t - 2 * per - arc) / r;
-                x = s1 + Math.cos(u) * r; y = s1 + Math.sin(u) * r;
-            } else if (t < 3 * per + 2 * arc) { x = a - r - (t - 2 * per - 2 * arc); y = a; }
-            else if (t < 3 * per + 3 * arc) {
-                const u = (t - 3 * per - 2 * arc) / r;
-                x = -s1 - Math.sin(u) * r; y = s1 + Math.cos(u) * r;
-            } else if (t < 4 * per + 3 * arc) { x = -a; y = a - r - (t - 3 * per - 3 * arc); }
-            else {
-                const u = (t - 4 * per - 3 * arc) / r;
-                x = -s1 - Math.cos(u) * r; y = -s1 - Math.sin(u) * r;
-            }
-            pts.push({ x: cx + x, y: cy + y });
-        }
-        // Filled Z core in the middle (insets scale with the logo size)
-        const zw = S * 0.42, zh = S * 0.44;
-        const zx = cx - zw / 2, zy = cy - zh / 2;
-        const e = Math.max(2, S * 0.06);
-        for (let i = 0; i < 34; i++) {
-            const u = i / 33;
-            pts.push({ x: zx + u * zw, y: zy + e });
-            pts.push({ x: zx + u * zw, y: zy + zh - e });
-            pts.push({ x: zx + u * zw, y: zy + u * (zh - 2 * e) + e });
-        }
-        return pts;
-    }
-
-    // Exit choreography: dissolve + fade, then release the page.
-    let finished = false;
-
-    // Set by the particle intro: hands the flying particles over to the
-    // page-background particle field (window.spawnEmber), so the cloud
-    // keeps living on behind the site after the splash fades. Runs exactly
-    // once - at the logo handoff, or on skip if the user clicks early.
-    let scatterToBackground = null;
-    function runScatter() {
-        if (!scatterToBackground) return;
-        const fn = scatterToBackground;
-        scatterToBackground = null;
-        try { fn(); } catch { /* decorative */ }
-    }
-
-    function finish() {
-        if (finished) return;
-        finished = true;
-        boot.classList.add("is-done");
-        runScatter();   // skipped early? -> release the in-flight particles
-        // If the startup sound was blocked by the autoplay policy and never
-        // got to play, stop trying: a chime kicking in after the splash is
-        // already gone would feel wrong.
-        if (!window.__startupStarted) window.__startupCancelled = true;
-        // Blocked autoplay while the splash is still up? Offer the one-click
-        // unlock instead: the click on "Enable sound" plays the chime and
-        // dismisses the splash in the same gesture.
-        if (!window.__startupStarted && !window.__startupCancelled
-            && !window.__startupMissing) {
-            const sb = document.getElementById("boot-sound");
-            if (sb) sb.classList.add("show");
-        }
-        document.documentElement.style.overflow = "";
-        document.body.style.overflow = "";
-        setTimeout(() => { boot.remove(); }, 900);
-    }
-
-    // Startup sound: already fired from the <head> (window.__startupAudio)
-    // so it plays instantly with the splash - nothing to do here.
-
-    // Soft click feedback on real controls only (links/buttons), same idea
-    // as the app's global klick.mp3 handler.
-    const clickAudio = new Audio("klick.mp3");
-    clickAudio.preload = "auto";
-    clickAudio.volume = 0.4;
-    document.addEventListener("click", (e) => {
-        if (!e.target.closest || !e.target.closest("a, button")) return;
-        try {
-            clickAudio.currentTime = 0;
-            const p = clickAudio.play();
-            if (p && p.catch) p.catch(() => { /* blocked until gesture */ });
-        } catch { /* decorative */ }
-    }, true);
-
-    // -----------------------------------------------------------------------
-    // Particle intro (ported from the app): particles fly in from the edges,
-    // swirl and converge onto the Z logo; glow rings pulse on lock-in, the
-    // real logo fades in underneath (handoff), then the particles rise up,
-    // sway and dissolve while the splash fades away smoothly.
-    // -----------------------------------------------------------------------
-    function runParticleIntro(onConverged) {
-        try {
-            if (!ctx || !canvas || canvas.clientWidth < 10) {
-                onConverged();
-                return;
-            }
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            const g2 = canvas.getContext("2d");
-            if (!g2) { onConverged(); return; }
-
-            // Measure the real logo element - particles converge onto it.
-            // Use offsetWidth (untransformed layout size): the mark is still
-            // hidden at scale(0.8), and getBoundingClientRect would include
-            // that transform. Kill the group's rise-in animation first so
-            // the measurement is not taken mid-flight (same as the app).
-            const inner = boot.querySelector(".boot-inner");
-            if (inner) inner.style.animation = "none";
-            const mark = boot.querySelector(".boot-mark");
-            if (!mark) { onConverged(); return; }
-            const rect = mark.getBoundingClientRect();
-            const introSize = mark.offsetWidth;
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-
-            const targets = markGlowPoints(cx, cy, introSize);
-            const COUNT = Math.min(720, Math.max(320,
-                Math.round((canvas.width * canvas.height) / 1200)));
-            const W = canvas.width, H = canvas.height;
-            const parts = [];
-            for (let i = 0; i < COUNT; i++) {
-                const edge = Math.floor(Math.random() * 4);
-                let x, y;
-                if (edge === 0) { x = Math.random() * W; y = -20; }
-                else if (edge === 1) { x = W + 20; y = Math.random() * H; }
-                else if (edge === 2) { x = Math.random() * W; y = H + 20; }
-                else { x = -20; y = Math.random() * H; }
-                const depth = 0.35 + Math.random() * 0.65;
-                const ang = Math.atan2(cy - y, cx - x);
-                const speed = (1.6 + Math.random() * 2.4) * depth;
-                const sizeRoll = Math.random();
-                parts.push({
-                    x, y,
-                    vx: Math.cos(ang) * speed,
-                    vy: Math.sin(ang) * speed,
-                    size: sizeRoll < 0.12
-                        ? (0.9 + Math.random() * 1.1) * depth
-                        : (0.45 + Math.random() * 0.8) * depth,
-                    depth,
-                    alpha: (0.3 + Math.random() * 0.55) * depth,
-                    spin: (Math.random() < 0.5 ? -1 : 1) * (0.8 + Math.random() * 1.2),
-                    tw: Math.random() * Math.PI * 2,
-                    twS: 2 + Math.random() * 3,
-                    bornDelay: Math.random() * 300,
-                    target: null, arrived: false,
-                });
-            }
-            // Map every particle to its nearest free glow point on the logo.
-            const free = targets.slice();
-            for (const p of parts) {
-                if (!free.length) break;
-                let bi = 0, bd = Infinity;
-                for (let j = 0; j < free.length; j++) {
-                    const d = (free[j].x - p.x) ** 2 + (free[j].y - p.y) ** 2;
-                    if (d < bd) { bd = d; bi = j; }
-                }
-                p.target = free.splice(bi, 1)[0];
-            }
-            let shareIdx = 0;
-            for (const p of parts) {
-                if (p.target) continue;
-                const base = targets[shareIdx % targets.length];
-                shareIdx++;
-                p.target = {
-                    x: base.x + (Math.random() - 0.5) * 3,
-                    y: base.y + (Math.random() - 0.5) * 3,
-                };
-            }
-
-            // Handover: every third intro particle becomes a long-lived
-            // "ember" in the page-background field. It keeps drifting up
-            // from where it sits, so when the splash fades away the cloud
-            // is already alive behind the website (continuity!).
-            scatterToBackground = () => {
-                if (typeof window.spawnEmber !== "function") return;
-                const now = performance.now();
-                for (let i = 0; i < parts.length; i += 3) {
-                    const p = parts[i];
-                    window.spawnEmber({
-                        x: p.x,
-                        y: p.y,
-                        vx: p.vx + (Math.random() - 0.5) * 0.24,
-                        vy: -(0.14 + Math.random() * 0.26),   // keep rising
-                        size: p.size,
-                        alpha: Math.min(0.4, p.alpha * 1.5),
-                        born: now,
-                        life: 9000 + Math.random() * 9000,
-                        fadeIn: 0.06,
-                        fadeOutStart: 0.7,
-                        bonus: 1,
-                    });
-                }
-            };
-
-            const t0 = performance.now();
-            const FORM_MS = 1500;   // fly in + converge onto the logo
-            const RING1_MS = 1650;  // first glow ring blooms on the logo
-            const RING2_MS = 1850;  // second, wider ring (double pulse)
-            const ORBIT_MS = 1050;  // longer, smoother rise + dissolve
-            let handoffDone = false;
-
-            // Layered formation rings as the logo locks in.
-            function drawRing(age, maxAge, startR, growth, peak) {
-                if (age < 0 || age > maxAge) return;
-                const k = age / maxAge;
-                const a = (1 - k) * peak;
-                const r = startR + k * growth;
-                const n = parseInt(bright.replace("#", ""), 16);
-                const br = (n >> 16) & 255, bg = (n >> 8) & 255, bb = n & 255;
-                const li = (v) => Math.min(255, Math.round(v + (255 - v) * 0.35));
-                const grad = g2.createRadialGradient(cx, cy, r * 0.82, cx, cy, r);
-                grad.addColorStop(0, `rgba(${li(br)}, ${li(bg)}, ${li(bb)}, 0)`);
-                grad.addColorStop(0.72, `rgba(${li(br)}, ${li(bg)}, ${li(bb)}, ${a})`);
-                grad.addColorStop(1, `rgba(${br}, ${bg}, ${bb}, 0)`);
-                g2.globalAlpha = 1;
-                g2.fillStyle = grad;
-                g2.beginPath();
-                g2.arc(cx, cy, r, 0, Math.PI * 2);
-                g2.fill();
-            }
-
-            function frame(now) {
-                if (finished) { g2.clearRect(0, 0, W, H); return; }
-                const t = now - t0;
-                if (t >= FORM_MS + ORBIT_MS) {
-                    g2.clearRect(0, 0, W, H);
-                    return;
-                }
-                // Full clear every frame: crisp particles, no motion-blur trails.
-                g2.clearRect(0, 0, W, H);
-                g2.globalCompositeOperation = "lighter";   // glows ADD up
-                const form = Math.min(1, t / FORM_MS);
-                const ease = 1 - Math.pow(1 - form, 3);    // ease-out cubic
-                const swirl = (1 - ease) * 0.35;
-                const orbit = t > FORM_MS ? Math.min(1, (t - FORM_MS) / ORBIT_MS) : 0;
-
-                // The double pulse: a tight ring right at lock-in, then a
-                // wider, softer one just after - reads as impact + echo.
-                // Ring radii scale with the rendered logo size.
-                const RS = introSize;
-                drawRing(t - RING1_MS, 620, RS * 0.62, RS * 2.2, 0.5);
-                drawRing(t - RING2_MS, 780, RS * 0.62, RS * 3.4, 0.34);
-
-                for (const p of parts) {
-                    if (!p.arrived && p.target) {
-                        const dx = p.target.x - p.x, dy = p.target.y - p.y;
-                        const d = Math.hypot(dx, dy) || 1;
-                        // spring toward the glow point (ramps in with ease)
-                        p.vx += (dx / d) * d * 0.006 * ease;
-                        p.vy += (dy / d) * d * 0.006 * ease;
-                        // tangential swirl while flying, gone once formed
-                        p.vx += (-dy / d) * p.spin * swirl;
-                        p.vy += (dx / d) * p.spin * swirl;
-                        if (d < 2 && form > 0.85) p.arrived = true;
-                    } else if (p.target) {
-                        // tiny hold jitter so the formed logo shimmers
-                        p.vx += (Math.random() - 0.5) * 0.25;
-                        p.vy += (Math.random() - 0.5) * 0.25;
-                    } else {
-                        p.vx += (cx - p.x) * 0.002 * ease;
-                        p.vy += (cy - p.y) * 0.002 * ease;
-                    }
-                    p.vx *= 0.9;
-                    p.vy *= 0.9;
-                    p.x += p.vx;
-                    p.y += p.vy;
-
-                    const bornIn = Math.max(0, Math.min(1, (t - p.bornDelay) / 350));
-                    let a = p.alpha * bornIn * (p.arrived ? 1.25 : 1);
-                    // Twinkle: subtle sinusoidal shimmer, stronger when formed
-                    a *= 0.82 + 0.18 * Math.sin(p.tw + (t / 1000) * p.twS);
-                    let px = p.x, py = p.y;
-                    if (orbit > 0) {
-                        // After convergence: rise UP off the logo, sway, fade.
-                        const drift = Math.max(-44, Math.min(44, (p.x - cx) * 0.4));
-                        px += drift * orbit;
-                        py += -orbit * 190;                 // fly UP, long glide
-                        px += Math.sin(p.tw + orbit * 5) * 18 * orbit;   // sway
-                        const inEnv = Math.min(1, orbit / 0.2);
-                        a *= inEnv * (1 - orbit) * 1.25;
-                    }
-                    const s = p.size * (p.arrived ? 1 + orbit * 1.5 : 1);
-                    const r = s * 6;   // glow sprite radius ~6x the core size
-                    g2.globalAlpha = Math.max(0, a);
-                    g2.drawImage(sprite, px - r, py - r, r * 2, r * 2);
-                    // tiny bright core on the near (deep) particles
-                    if (p.depth > 0.75) {
-                        g2.globalAlpha = Math.max(0, a * 0.9);
-                        g2.fillStyle = "rgba(255, 255, 255, 0.9)";
-                        g2.beginPath();
-                        g2.arc(px, py, Math.max(0.4, s * 0.55), 0, Math.PI * 2);
-                        g2.fill();
-                    }
-                }
-                g2.globalAlpha = 1;
-                g2.globalCompositeOperation = "source-over";
-
-                // Fully converged -> hand the cloud over to the page
-                // background, reveal the real logo underneath and start
-                // the exit. The particles keep celebrating/dissolving on
-                // the splash while their ember twins already drift behind
-                // the page.
-                if (!handoffDone && form >= 1) {
-                    handoffDone = true;
-                    runScatter();
-                    onConverged();
-                }
-                requestAnimationFrame(frame);
-            }
-            requestAnimationFrame(frame);
-        } catch {
-            try { onConverged(); } catch { /* decorative */ }
-        }
-    }
-
-    // Status text phases, mimicking the app's boot sequence.
-    const PHASES = [
-        { text: "Starting ...", ms: 1400 },
-        { text: "Loading website ...", ms: 1100 },
-    ];
-
-    // Skip on click / Escape - the animation is decorative.
-    boot.addEventListener("click", finish);
-    window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") finish();
-    });
-
-    // "Enable sound" button: this click IS the user gesture that unlocks
-    // audio on HTTPS - play the chime immediately, then dismiss the splash.
-    const soundBtn = document.getElementById("boot-sound");
-    if (soundBtn) {
-        soundBtn.addEventListener("click", (e) => {
-            e.stopPropagation();   // do not treat this as plain skip
-            if (typeof window.__unlockStartupSound === "function") {
-                window.__unlockStartupSound();
-            }
-            window.__startupCancelled = false;
-            soundBtn.classList.remove("show");
-            finish();
-        });
-    }
-
-    // Minimum splash time so the intro reads as intended.
-    const MIN_SHOW = 3400;
-    const t0 = performance.now();
-    let phaseIdx = 0;
-    let phaseStart = t0;
-    statusEl.textContent = PHASES[0].text;
-
-    // Cycle the status texts while the splash is visible.
-    function tickStatus(now) {
-        if (finished) return;
-        if (now - phaseStart >= PHASES[phaseIdx].ms) {
-            phaseIdx = (phaseIdx + 1) % PHASES.length;
-            phaseStart = now;
-            statusEl.textContent = PHASES[phaseIdx].text;
-        }
-        requestAnimationFrame(tickStatus);
-    }
-    requestAnimationFrame(tickStatus);
-
-    // Wait for the site to be ready (or the min time), then play the exit.
-    function armExit() {
-        if (armExit.done) return;
-        armExit.done = true;
-        const elapsed = performance.now() - t0;
-        const wait = Math.max(0, MIN_SHOW - elapsed);
-        setTimeout(() => {
-            statusEl.textContent = "Ready";
-            finish();
-        }, wait);
-    }
-    if (document.readyState === "complete") {
-        armExit();
-    } else {
-        window.addEventListener("load", armExit);
-        // Hard cap so a slow resource can never trap the user on the splash.
-        setTimeout(armExit, 7000);
-    }
-
-    // Run the intro; on convergence reveal logo/bar/status ("risen") and
-    // arm the smooth fade-out exit. The particles keep rising/dissolving
-    // while the splash itself fades out smoothly.
-    runParticleIntro(() => {
-        boot.classList.add("risen");
-        armExit();
-    });
-})();
-
-// Lenis smooth scroll: buttery wheel/touch scrolling with momentum.
-// If the CDN is unreachable, the page gracefully falls back to native
-// scrolling (Lenis is undefined -> no-op).
 (function () {
     if (typeof Lenis === "undefined") return;
 
     const lenis = new Lenis({
         autoRaf: true,
         autoToggle: true,
-        lerp: 0.09,                 // lower = smoother, longer glide
+        lerp: 0.09,         
         wheelMultiplier: 1,
         stopInertiaOnNavigate: true,
-        // respectReducedMotion defaults to true
+
     });
     window.lenis = lenis;
 
-    // Anchor links: scroll through the Lenis engine (same eased feel as
-    // wheel scrolling) and keep the URL hash in sync.
+
     document.querySelectorAll('a[href^="#"]').forEach((link) => {
         link.addEventListener("click", (e) => {
             const id = link.getAttribute("href");
@@ -2180,7 +1644,7 @@ footer {
             if (!target) return;
             e.preventDefault();
             lenis.scrollTo(target, {
-                offset: 80,          // sticky topbar + breathing room
+                offset: 80,     
                 duration: 1.2,
                 onComplete: () => history.replaceState(null, "", id),
             });
